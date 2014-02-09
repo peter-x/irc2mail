@@ -31,7 +31,8 @@ parseMonth()
 openedOrDayChangedRegex="^(Log opened|Day changed) [^ ]+ ([^ ]+) ([0-9]+) \
 ([0-9][0-9]:[0-9][0-9]:[0-9][0-9] )?([0-9]{4})"
 
-maxAge=$((10#interval * 60 ))
+printedHeader=
+maxAge=$((10#$interval * 60 ))
 currentTime=$(date +%s)
 dayStart=0
 # remove system messages (join/part/...) and parse regular messages
@@ -50,8 +51,14 @@ do
         minute=${time##*:}
         age=$((currentTime - (10#$dayStart + 10#$hour * 3600 + 10#$minute * 60)))
 
-        if [ $age -lt $maxAge ]
+        if [ "$age" -lt "$maxAge" ]
         then
+            if [ -z "$printedHeader" ]
+            then
+                echo "Messages in   $logfile   from the last $interval minutes:"
+                echo
+                printedHeader=1
+            fi
             echo "$time $message"
         fi
     fi
